@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/21.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.moldidev.controller.Controller">
+   <children>
+      <Pane layoutX="-3.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="720.0" prefWidth="1286.0" style="-fx-background-color: #1f1f1f;">
+         <children>
+            <Label fx:id="numberOfClientsLabel" layoutX="46.0" layoutY="38.0" prefHeight="49.0" prefWidth="153.0" text="Number of clients:" textFill="WHITE">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <TextField fx:id="numberOfClientsTextField" layoutX="214.0" layoutY="50.0" promptText="e.g. 4" style="-fx-prompt-text-fill: #6f706f" />
+            <Label fx:id="numberOfQueuesLabel" layoutX="46.0" layoutY="103.0" prefHeight="49.0" prefWidth="162.0" text="Number of queues: " textFill="WHITE">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <TextField fx:id="numberOfQueuesTextField" layoutX="214.0" layoutY="115.0" promptText="e.g. 2" style="-fx-prompt-text-fill: #6f706f" />
+            <Label fx:id="simulationIntervalLabel" layoutX="46.0" layoutY="176.0" prefHeight="49.0" prefWidth="162.0" text="Simulation interval: " textFill="WHITE">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+            <TextField fx:id="simulationIntervalTextField" layoutX="214.0" layoutY="189.0" promptText="e.g. 60" style="-fx-prompt-text-fill: #6f706f" />
+            <TextArea fx:id="simulationLogsTextArea" editable="false" layoutX="836.0" layoutY="294.0" prefHeight="385.0" prefWidth="434.0" />
+            <Label fx:id="simulationLogsLabel" layoutX="984.0" layoutY="259.0" text="Log of events" textFill="WHITE">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <TextField fx:id="minimumArrivalTimeTextField" layoutX="42.0" layoutY="336.0" promptText="e.g. 2" style="-fx-prompt-text-fill: #6f706f" />
+            <TextField fx:id="maximumArrivalTimeTextField" layoutX="231.0" layoutY="336.0" promptText="e.g. 30" style="-fx-prompt-text-fill: #6f706f" />
+            <Label fx:id="minimumArrivalTimeLabel" layoutX="46.0" layoutY="287.0" prefHeight="49.0" prefWidth="162.0" text="Minimum arrival time" textFill="WHITE">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="maximumArrivalTimeLabel" layoutX="235.0" layoutY="287.0" prefHeight="49.0" prefWidth="162.0" text="Maximum arrival time" textFill="WHITE">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="minimumServiceTimeLabel" layoutX="47.0" layoutY="391.0" prefHeight="49.0" prefWidth="162.0" text="Minimum service time" textFill="WHITE">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="maximumServiceTimeLabel" layoutX="235.0" layoutY="391.0" prefHeight="49.0" prefWidth="162.0" text="Maximum service time" textFill="WHITE">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <TextField fx:id="minimumServiceTimeTextField" layoutX="42.0" layoutY="440.0" promptText="e.g. 2" style="-fx-prompt-text-fill: #6f706f" />
+            <TextField fx:id="maximumServiceTimeTextField" layoutX="231.0" layoutY="440.0" promptText="e.g. 4" style="-fx-prompt-text-fill: #6f706f" />
+            <Button fx:id="startSimulationButton" layoutX="30.0" layoutY="498.0" mnemonicParsing="false" onMouseClicked="#onStartSimulationButtonClicked" prefHeight="41.0" prefWidth="374.0" text="Start simulation" />
+            <TextArea fx:id="currentSimulationTimeTextArea" editable="false" layoutX="933.0" layoutY="74.0" prefHeight="24.0" prefWidth="241.0" />
+            <Label fx:id="currentSimulationTimeLabel" layoutX="946.0" layoutY="40.0" text="Current simulation time" textFill="WHITE">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
+            <Label fx:id="inputValidationErrorLabel" layoutX="21.0" layoutY="575.0" prefHeight="124.0" prefWidth="800.0" textAlignment="CENTER" textFill="RED">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="validInputLabel" layoutX="85.0" layoutY="615.0" textAlignment="CENTER" textFill="GREEN">
+               <font>
+                  <Font size="16.0" />
+               </font>
+            </Label>
+         </children>
+      </Pane>
+   </children>
+</AnchorPane>
