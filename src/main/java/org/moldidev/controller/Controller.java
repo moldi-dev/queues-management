@@ -2,12 +2,10 @@ package org.moldidev.controller;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.util.Duration;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.util.Duration;
+import org.moldidev.business.SimulationManager;
 
 public class Controller {
 
@@ -50,14 +48,22 @@ public class Controller {
     @FXML
     private Button startSimulationButton;
     @FXML
-    private TextArea currentSimulationTimeTextArea;
-    @FXML
     private Label currentSimulationTimeLabel;
+    @FXML
+    private Label selectionPolicyLabel;
+    @FXML
+    private ChoiceBox<String> selectionPolicyChoiceBox;
     private Timeline inputErrorTimeline = new Timeline();
     private Timeline validInputTimeline = new Timeline();
     private Timeline disableInputsTimeline = new Timeline();
 
-    public Controller() {}
+    @FXML
+    public void initialize() {
+        this.selectionPolicyChoiceBox.getItems().add("SHORTEST TIME");
+        this.selectionPolicyChoiceBox.getItems().add("SHORTEST QUEUE");
+
+        this.selectionPolicyChoiceBox.getSelectionModel().select(0);
+    }
 
     public TextField getNumberOfClientsTextField() {
         return this.numberOfClientsTextField;
@@ -69,6 +75,10 @@ public class Controller {
 
     public TextField getSimulationIntervalTextField() {
         return this.simulationIntervalTextField;
+    }
+
+    public TextArea getSimulationLogsTextArea() {
+        return this.simulationLogsTextArea;
     }
 
     public TextField getMinimumArrivalTimeTextField() {
@@ -87,26 +97,28 @@ public class Controller {
         return this.maximumServiceTimeTextField;
     }
 
-    public TextArea getCurrentSimulationTimeTextArea() {
-        return this.currentSimulationTimeTextArea;
+    public Label getCurrentSimulationTimeLabel() {
+        return this.currentSimulationTimeLabel;
     }
 
-    public void setSimulationLogsTextArea(TextArea simulationLogsTextArea) {
-        this.simulationLogsTextArea = simulationLogsTextArea;
-    }
+    public int getSelectionPolicy() {
+        if (selectionPolicyChoiceBox.getSelectionModel().isSelected(0)) {
+            return 0;
+        }
 
-    public void setCurrentSimulationTimeTextArea(TextArea currentSimulationTimeTextArea) {
-        this.currentSimulationTimeTextArea = currentSimulationTimeTextArea;
+        else {
+            return 1;
+        }
     }
 
     @FXML
     private void onStartSimulationButtonClicked() {
         if (checkInputs()) {
-            setInputValidationErrorLabelMessage("");
-            setValidInputLabelMessage("The simulation has been successfully set up! Performing the simulation...", Integer.parseInt(simulationIntervalTextField.getText().replaceAll(" ", "")));
             disableInputs(Integer.parseInt(simulationIntervalTextField.getText().replaceAll(" ", "")));
 
-            // start performing the simulation
+            SimulationManager simulationManager = new SimulationManager(this);
+            Thread thread = new Thread(simulationManager);
+            thread.start();
         }
     }
 
@@ -153,14 +165,16 @@ public class Controller {
         this.simulationIntervalTextField.setDisable(true);
         this.minimumArrivalTimeTextField.setDisable(true);
         this.maximumArrivalTimeTextField.setDisable(true);
+        this.selectionPolicyChoiceBox.setDisable(true);
+        setInputValidationErrorLabelMessage("");
+        this.simulationLogsTextArea.setText("");
 
-        if (this.disableInputsTimeline != null) {
-            this.disableInputsTimeline.stop();
-        }
+        setValidInputLabelMessage("The simulation has been successfully set up! Performing the simulation...", Integer.parseInt(simulationIntervalTextField.getText().replaceAll(" ", "")));
 
         this.disableInputsTimeline = new Timeline(new KeyFrame(
                 Duration.seconds(simulationDuration),
                 event -> {
+                    this.disableInputsTimeline.stop();
                     this.startSimulationButton.setDisable(false);
                     this.maximumServiceTimeTextField.setDisable(false);
                     this.minimumServiceTimeTextField.setDisable(false);
@@ -169,6 +183,9 @@ public class Controller {
                     this.simulationIntervalTextField.setDisable(false);
                     this.minimumArrivalTimeTextField.setDisable(false);
                     this.maximumArrivalTimeTextField.setDisable(false);
+                    this.selectionPolicyChoiceBox.setDisable(false);
+                    setInputValidationErrorLabelMessage("");
+                    this.currentSimulationTimeLabel.setText("Simulation status: inactive");
                 }
         ));
 
@@ -179,97 +196,108 @@ public class Controller {
         String numberRegex = "^[1-9]+[0-9]*$"; // regex which checks for an integer greater than 0
         int userInput1;
         int userInput2;
+        int userInput3;
 
         // Validate the number of clients text field (should be an integer greater than 0)
-        if (numberOfClientsTextField.getText().isEmpty() || numberOfClientsTextField.getText().isBlank()) {
-            setInputValidationErrorLabelMessage("The number of clients text field can't be empty, nor blank!");
+        if (this.numberOfClientsTextField.getText().isEmpty() || this.numberOfClientsTextField.getText().isBlank()) {
+            setInputValidationErrorLabelMessage("The number of clients input field can't be empty, nor blank!");
             return false;
         }
 
-        else if (!numberOfClientsTextField.getText().replaceAll(" ", "").matches(numberRegex)) {
-            setInputValidationErrorLabelMessage("The number of clients should be an integer strictly greater than 0!");
+        if (!this.numberOfClientsTextField.getText().replaceAll(" ", "").matches(numberRegex)) {
+            setInputValidationErrorLabelMessage("The number of clients must be an integer strictly greater than 0!");
             return false;
         }
 
         // Validate the number of queues text field (should be an integer greater than 0)
-        else if (numberOfQueuesTextField.getText().isEmpty() || numberOfQueuesTextField.getText().isBlank()) {
-            setInputValidationErrorLabelMessage("The number of queues text field can't be empty, nor blank!");
+        if (this.numberOfQueuesTextField.getText().isEmpty() || this.numberOfQueuesTextField.getText().isBlank()) {
+            setInputValidationErrorLabelMessage("The number of queues input field can't be empty, nor blank!");
             return false;
         }
 
-        else if (!numberOfQueuesTextField.getText().replaceAll(" ", "").matches(numberRegex)) {
-            setInputValidationErrorLabelMessage("The number of queues should be an integer strictly greater than 0!");
+        if (!this.numberOfQueuesTextField.getText().replaceAll(" ", "").matches(numberRegex)) {
+            setInputValidationErrorLabelMessage("The number of queues must be an integer strictly greater than 0!");
             return false;
         }
 
         // Validate the simulation interval text field (should be an integer greater than 0)
-        else if (simulationIntervalTextField.getText().isEmpty() || simulationIntervalTextField.getText().isBlank()) {
-            setInputValidationErrorLabelMessage("The simulation interval text field can't be empty, nor blank!");
+        if (this.simulationIntervalTextField.getText().isEmpty() || this.simulationIntervalTextField.getText().isBlank()) {
+            setInputValidationErrorLabelMessage("The simulation interval input field can't be empty, nor blank!");
             return false;
         }
 
-        else if (!simulationIntervalTextField.getText().replaceAll(" ", "").matches(numberRegex)) {
-            setInputValidationErrorLabelMessage("The simulation interval should be an integer strictly greater than 0!");
+        if (!this.simulationIntervalTextField.getText().replaceAll(" ", "").matches(numberRegex)) {
+            setInputValidationErrorLabelMessage("The simulation interval must be an integer strictly greater than 0!");
             return false;
         }
 
         // Validate the minimum arrival time text field (should be an integer greater than 0)
-        else if (minimumArrivalTimeTextField.getText().isEmpty() || minimumArrivalTimeTextField.getText().isBlank()) {
-            setInputValidationErrorLabelMessage("The minimum arrival time text field can't be empty, nor blank!");
+        if (this.minimumArrivalTimeTextField.getText().isEmpty() || this.minimumArrivalTimeTextField.getText().isBlank()) {
+            setInputValidationErrorLabelMessage("The minimum arrival time input field can't be empty, nor blank!");
             return false;
         }
 
-        else if (!minimumArrivalTimeTextField.getText().replaceAll(" ", "").matches(numberRegex)) {
-            setInputValidationErrorLabelMessage("The minimum arrival time should be an integer strictly greater than 0!");
+        if (!this.minimumArrivalTimeTextField.getText().replaceAll(" ", "").matches(numberRegex)) {
+            setInputValidationErrorLabelMessage("The minimum arrival time must be an integer strictly greater than 0!");
             return false;
         }
 
         // Validate the maximum arrival time text field (should be an integer greater than 0)
-        else if (maximumArrivalTimeTextField.getText().isEmpty() || maximumArrivalTimeTextField.getText().isBlank()) {
-            setInputValidationErrorLabelMessage("The maximum arrival time can't be empty, nor blank!");
+        if (this.maximumArrivalTimeTextField.getText().isEmpty() || maximumArrivalTimeTextField.getText().isBlank()) {
+            setInputValidationErrorLabelMessage("The maximum arrival time input field can't be empty, nor blank!");
             return false;
         }
 
-        else if (!maximumArrivalTimeTextField.getText().replaceAll(" ", "").matches(numberRegex)) {
-            setInputValidationErrorLabelMessage("The maximum arrival time should be an integer strictly greater than 0!");
+        if (!this.maximumArrivalTimeTextField.getText().replaceAll(" ", "").matches(numberRegex)) {
+            setInputValidationErrorLabelMessage("The maximum arrival time must be an integer strictly greater than 0!");
             return false;
         }
 
-        userInput1 = Integer.parseInt(minimumArrivalTimeTextField.getText().replaceAll(" ", ""));
-        userInput2 = Integer.parseInt(maximumArrivalTimeTextField.getText().replaceAll(" ", ""));
+        userInput1 = Integer.parseInt(this.minimumArrivalTimeTextField.getText().replaceAll(" ", ""));
+        userInput2 = Integer.parseInt(this.maximumArrivalTimeTextField.getText().replaceAll(" ", ""));
 
         if (userInput1 > userInput2) {
-            setInputValidationErrorLabelMessage("The minimum arrival time should be less than or equal to the maximum arrival time!");
+            setInputValidationErrorLabelMessage("The minimum arrival time must be less than or equal to the maximum arrival time!");
+            return false;
+        }
+
+        // Validate the maximum arrival time + maximum service time and simulation time
+        userInput1 = Integer.parseInt(this.maximumArrivalTimeTextField.getText().replaceAll(" ", ""));
+        userInput2 = Integer.parseInt(this.simulationIntervalTextField.getText().replaceAll(" ", ""));
+        userInput3 = Integer.parseInt(this.maximumServiceTimeTextField.getText().replaceAll(" ", ""));
+
+        if (userInput1 + userInput3 > userInput2) {
+            setInputValidationErrorLabelMessage("The simulation interval must be greater or equal to the sum of maximum arrival time and maximum service time!");
             return false;
         }
 
         // Validate the minimum service time text field (should be an integer greater than 0)
-        else if (minimumServiceTimeTextField.getText().isEmpty() || minimumServiceTimeTextField.getText().isBlank()) {
-            setInputValidationErrorLabelMessage("The minimum service time text field can't be empty, nor blank!");
+        if (this.minimumServiceTimeTextField.getText().isEmpty() || this.minimumServiceTimeTextField.getText().isBlank()) {
+            setInputValidationErrorLabelMessage("The minimum service time input field can't be empty, nor blank!");
             return false;
         }
 
-        else if (!minimumServiceTimeTextField.getText().replaceAll(" ", "").matches(numberRegex)) {
-            setInputValidationErrorLabelMessage("The minimum service time should be an integer strictly greater than 0!");
+        if (!this.minimumServiceTimeTextField.getText().replaceAll(" ", "").matches(numberRegex)) {
+            setInputValidationErrorLabelMessage("The minimum service time must be an integer strictly greater than 0!");
             return false;
         }
 
         // Validate the maximum service time text field (should be an integer greater than 0)
-        else if (maximumServiceTimeTextField.getText().isEmpty() || maximumServiceTimeTextField.getText().isBlank()) {
-            setInputValidationErrorLabelMessage("The maximum service time text field can't be empty, nor blank!");
+        if (this.maximumServiceTimeTextField.getText().isEmpty() || this.maximumServiceTimeTextField.getText().isBlank()) {
+            setInputValidationErrorLabelMessage("The maximum service time input field can't be empty, nor blank!");
             return false;
         }
 
-        else if (!maximumServiceTimeTextField.getText().replaceAll(" ", "").matches(numberRegex)) {
-            setInputValidationErrorLabelMessage("The maximum service time should be an integer strictly greater than 0!");
+        if (!this.maximumServiceTimeTextField.getText().replaceAll(" ", "").matches(numberRegex)) {
+            setInputValidationErrorLabelMessage("The maximum service time must be an integer strictly greater than 0!");
             return false;
         }
 
-        userInput1 = Integer.parseInt(minimumServiceTimeTextField.getText().replaceAll(" ", ""));
-        userInput2 = Integer.parseInt(maximumServiceTimeTextField.getText().replaceAll(" ", ""));
+        userInput1 = Integer.parseInt(this.minimumServiceTimeTextField.getText().replaceAll(" ", ""));
+        userInput2 = Integer.parseInt(this.maximumServiceTimeTextField.getText().replaceAll(" ", ""));
 
         if (userInput1 > userInput2) {
-            setInputValidationErrorLabelMessage("The minimum service time should be less than or equal to the maximum service time!");
+            setInputValidationErrorLabelMessage("The minimum service time must be less than or equal to the maximum service time!");
             return false;
         }
 

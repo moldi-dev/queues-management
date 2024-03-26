@@ -14,6 +14,7 @@ public class Application extends javafx.application.Application {
         stage.setTitle("Queues management application made by Moldovan Darius-Andrei, 30421");
         stage.setResizable(false);
         stage.setScene(scene);
+        stage.setOnCloseRequest(event -> System.exit(0));
         stage.show();
     }
 

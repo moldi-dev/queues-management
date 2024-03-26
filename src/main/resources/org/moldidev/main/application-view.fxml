@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
@@ -30,53 +31,54 @@
                </font>
             </Label>
             <TextField fx:id="simulationIntervalTextField" layoutX="214.0" layoutY="189.0" promptText="e.g. 60" style="-fx-prompt-text-fill: #6f706f" />
-            <TextArea fx:id="simulationLogsTextArea" editable="false" layoutX="836.0" layoutY="294.0" prefHeight="385.0" prefWidth="434.0" />
-            <Label fx:id="simulationLogsLabel" layoutX="984.0" layoutY="259.0" text="Log of events" textFill="WHITE">
+            <TextArea fx:id="simulationLogsTextArea" editable="false" layoutX="480.0" layoutY="77.0" prefHeight="461.0" prefWidth="778.0" />
+            <Label fx:id="simulationLogsLabel" layoutX="808.0" layoutY="40.0" text="Log of events" textFill="WHITE">
                <font>
                   <Font size="18.0" />
                </font>
             </Label>
-            <TextField fx:id="minimumArrivalTimeTextField" layoutX="42.0" layoutY="336.0" promptText="e.g. 2" style="-fx-prompt-text-fill: #6f706f" />
-            <TextField fx:id="maximumArrivalTimeTextField" layoutX="231.0" layoutY="336.0" promptText="e.g. 30" style="-fx-prompt-text-fill: #6f706f" />
-            <Label fx:id="minimumArrivalTimeLabel" layoutX="46.0" layoutY="287.0" prefHeight="49.0" prefWidth="162.0" text="Minimum arrival time" textFill="WHITE">
+            <TextField fx:id="minimumArrivalTimeTextField" layoutX="42.0" layoutY="296.0" promptText="e.g. 2" style="-fx-prompt-text-fill: #6f706f" />
+            <TextField fx:id="maximumArrivalTimeTextField" layoutX="231.0" layoutY="296.0" promptText="e.g. 30" style="-fx-prompt-text-fill: #6f706f" />
+            <Label fx:id="minimumArrivalTimeLabel" layoutX="47.0" layoutY="245.0" prefHeight="49.0" prefWidth="162.0" text="Minimum arrival time" textFill="WHITE">
                <font>
                   <Font size="14.0" />
                </font>
             </Label>
-            <Label fx:id="maximumArrivalTimeLabel" layoutX="235.0" layoutY="287.0" prefHeight="49.0" prefWidth="162.0" text="Maximum arrival time" textFill="WHITE">
+            <Label fx:id="maximumArrivalTimeLabel" layoutX="235.0" layoutY="245.0" prefHeight="49.0" prefWidth="162.0" text="Maximum arrival time" textFill="WHITE">
                <font>
                   <Font size="14.0" />
                </font>
             </Label>
-            <Label fx:id="minimumServiceTimeLabel" layoutX="47.0" layoutY="391.0" prefHeight="49.0" prefWidth="162.0" text="Minimum service time" textFill="WHITE">
+            <Label fx:id="minimumServiceTimeLabel" layoutX="46.0" layoutY="320.0" prefHeight="49.0" prefWidth="162.0" text="Minimum service time" textFill="WHITE">
                <font>
                   <Font size="14.0" />
                </font>
             </Label>
-            <Label fx:id="maximumServiceTimeLabel" layoutX="235.0" layoutY="391.0" prefHeight="49.0" prefWidth="162.0" text="Maximum service time" textFill="WHITE">
+            <Label fx:id="maximumServiceTimeLabel" layoutX="235.0" layoutY="320.0" prefHeight="49.0" prefWidth="162.0" text="Maximum service time" textFill="WHITE">
                <font>
                   <Font size="14.0" />
                </font>
             </Label>
-            <TextField fx:id="minimumServiceTimeTextField" layoutX="42.0" layoutY="440.0" promptText="e.g. 2" style="-fx-prompt-text-fill: #6f706f" />
-            <TextField fx:id="maximumServiceTimeTextField" layoutX="231.0" layoutY="440.0" promptText="e.g. 4" style="-fx-prompt-text-fill: #6f706f" />
-            <Button fx:id="startSimulationButton" layoutX="30.0" layoutY="498.0" mnemonicParsing="false" onMouseClicked="#onStartSimulationButtonClicked" prefHeight="41.0" prefWidth="374.0" text="Start simulation" />
-            <TextArea fx:id="currentSimulationTimeTextArea" editable="false" layoutX="933.0" layoutY="74.0" prefHeight="24.0" prefWidth="241.0" />
-            <Label fx:id="currentSimulationTimeLabel" layoutX="946.0" layoutY="40.0" text="Current simulation time" textFill="WHITE">
+            <TextField fx:id="minimumServiceTimeTextField" layoutX="43.0" layoutY="360.0" promptText="e.g. 2" style="-fx-prompt-text-fill: #6f706f" />
+            <TextField fx:id="maximumServiceTimeTextField" layoutX="231.0" layoutY="360.0" promptText="e.g. 4" style="-fx-prompt-text-fill: #6f706f" />
+            <Button fx:id="startSimulationButton" layoutX="21.0" layoutY="500.0" mnemonicParsing="false" onMouseClicked="#onStartSimulationButtonClicked" prefHeight="41.0" prefWidth="374.0" text="Start simulation" />
+            <Label fx:id="currentSimulationTimeLabel" layoutX="750.0" layoutY="550.0" prefHeight="70.0" prefWidth="423.0" text="Simulation status: inactive" textAlignment="CENTER" textFill="WHITE">
                <font>
                   <Font size="18.0" />
                </font>
             </Label>
-            <Label fx:id="inputValidationErrorLabel" layoutX="21.0" layoutY="575.0" prefHeight="124.0" prefWidth="800.0" textAlignment="CENTER" textFill="RED">
+            <Label fx:id="inputValidationErrorLabel" layoutX="22.0" layoutY="653.0" prefHeight="38.0" prefWidth="850.0" textAlignment="CENTER" textFill="RED">
                <font>
                   <Font size="14.0" />
                </font>
             </Label>
-            <Label fx:id="validInputLabel" layoutX="85.0" layoutY="615.0" textAlignment="CENTER" textFill="GREEN">
+            <Label fx:id="validInputLabel" layoutX="26.0" layoutY="653.0" prefHeight="38.0" prefWidth="750.0" textAlignment="CENTER" textFill="GREEN">
                <font>
                   <Font size="16.0" />
                </font>
             </Label>
+            <ChoiceBox fx:id="selectionPolicyChoiceBox" layoutX="149.0" layoutY="432.0" prefWidth="150.0" />
+            <Label fx:id="selectionPolicyLabel" layoutX="173.0" layoutY="407.0" text="Selection Policy" textFill="WHITE" />
          </children>
       </Pane>
    </children>
