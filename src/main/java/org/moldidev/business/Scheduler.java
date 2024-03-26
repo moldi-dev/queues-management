@@ -19,14 +19,14 @@ public class Scheduler implements Strategy {
         this.strategy = new TimeStrategy();
     }
 
-    public Scheduler(int maxNoServers, int maxTaskPerServer) {
+    public Scheduler(int maxNoServers, int maxTasksPerServer) {
         this.maxNoServers = maxNoServers;
-        this.maxTasksPerServer = maxTaskPerServer;
         this.servers = new ArrayList<>();
         this.strategy = new TimeStrategy();
+        this.maxTasksPerServer = maxTasksPerServer;
 
         for (int i = 0; i < maxNoServers; i++) {
-            Server server = new Server();
+            Server server = new Server(maxTasksPerServer);
             Thread serverThread = new Thread(server);
             serverThread.start();
             servers.add(server);

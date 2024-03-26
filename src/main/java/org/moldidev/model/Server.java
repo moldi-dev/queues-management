@@ -1,5 +1,6 @@
 package org.moldidev.model;
 
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -8,14 +9,9 @@ public class Server implements Runnable {
     private BlockingQueue<Task> tasks;
     private AtomicInteger waitingPeriod;
 
-    public Server() {
-        this.tasks = new LinkedBlockingQueue<>();
+    public Server(int maxTasksPerServer) {
+        this.tasks = new ArrayBlockingQueue<>(maxTasksPerServer);
         this.waitingPeriod = new AtomicInteger(0);
-    }
-
-    public Server(BlockingQueue<Task> tasks, AtomicInteger waitingPeriod) {
-        this.tasks = tasks;
-        this.waitingPeriod = waitingPeriod;
     }
 
     public Task[] getTasks() {

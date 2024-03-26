@@ -54,8 +54,6 @@ public class Controller {
     @FXML
     private ChoiceBox<String> selectionPolicyChoiceBox;
     private Timeline inputErrorTimeline = new Timeline();
-    private Timeline validInputTimeline = new Timeline();
-    private Timeline disableInputsTimeline = new Timeline();
 
     @FXML
     public void initialize() {
@@ -101,6 +99,10 @@ public class Controller {
         return this.currentSimulationTimeLabel;
     }
 
+    public Label getValidInputLabel() {
+        return this.validInputLabel;
+    }
+
     public int getSelectionPolicy() {
         if (selectionPolicyChoiceBox.getSelectionModel().isSelected(0)) {
             return 0;
@@ -114,8 +116,6 @@ public class Controller {
     @FXML
     private void onStartSimulationButtonClicked() {
         if (checkInputs()) {
-            disableInputs(Integer.parseInt(simulationIntervalTextField.getText().replaceAll(" ", "")));
-
             SimulationManager simulationManager = new SimulationManager(this);
             Thread thread = new Thread(simulationManager);
             thread.start();
@@ -139,24 +139,7 @@ public class Controller {
         this.inputErrorTimeline.play();
     }
 
-    private void setValidInputLabelMessage(String message, int simulationDuration) {
-        this.validInputLabel.setText(message);
-
-        if (this.validInputTimeline != null) {
-            this.validInputTimeline.stop();
-        }
-
-        this.validInputTimeline = new Timeline(new KeyFrame(
-                Duration.seconds(simulationDuration),
-                event -> {
-                    this.validInputLabel.setText("");
-                }
-        ));
-
-        this.validInputTimeline.play();
-    }
-
-    private void disableInputs(int simulationDuration) {
+    public synchronized void disableInputs() {
         this.startSimulationButton.setDisable(true);
         this.maximumServiceTimeTextField.setDisable(true);
         this.minimumServiceTimeTextField.setDisable(true);
@@ -168,28 +151,20 @@ public class Controller {
         this.selectionPolicyChoiceBox.setDisable(true);
         setInputValidationErrorLabelMessage("");
         this.simulationLogsTextArea.setText("");
+    }
 
-        setValidInputLabelMessage("The simulation has been successfully set up! Performing the simulation...", Integer.parseInt(simulationIntervalTextField.getText().replaceAll(" ", "")));
-
-        this.disableInputsTimeline = new Timeline(new KeyFrame(
-                Duration.seconds(simulationDuration),
-                event -> {
-                    this.disableInputsTimeline.stop();
-                    this.startSimulationButton.setDisable(false);
-                    this.maximumServiceTimeTextField.setDisable(false);
-                    this.minimumServiceTimeTextField.setDisable(false);
-                    this.numberOfQueuesTextField.setDisable(false);
-                    this.numberOfClientsTextField.setDisable(false);
-                    this.simulationIntervalTextField.setDisable(false);
-                    this.minimumArrivalTimeTextField.setDisable(false);
-                    this.maximumArrivalTimeTextField.setDisable(false);
-                    this.selectionPolicyChoiceBox.setDisable(false);
-                    setInputValidationErrorLabelMessage("");
-                    this.currentSimulationTimeLabel.setText("Simulation status: inactive");
-                }
-        ));
-
-        this.disableInputsTimeline.play();
+    public synchronized void enableInputs() {
+        this.startSimulationButton.setDisable(false);
+        this.maximumServiceTimeTextField.setDisable(false);
+        this.minimumServiceTimeTextField.setDisable(false);
+        this.numberOfQueuesTextField.setDisable(false);
+        this.numberOfClientsTextField.setDisable(false);
+        this.simulationIntervalTextField.setDisable(false);
+        this.minimumArrivalTimeTextField.setDisable(false);
+        this.maximumArrivalTimeTextField.setDisable(false);
+        this.selectionPolicyChoiceBox.setDisable(false);
+        setInputValidationErrorLabelMessage("");
+        this.validInputLabel.setText("");
     }
 
     private boolean checkInputs() {

@@ -1,6 +1,6 @@
 package org.moldidev.model;
 
-public class Task implements Comparable<Task>{
+public class Task implements Comparable<Task> {
     private int id;
     private int arrivalTime;
     private int serviceTime;

@@ -62,7 +62,7 @@
             <TextField fx:id="minimumServiceTimeTextField" layoutX="43.0" layoutY="360.0" promptText="e.g. 2" style="-fx-prompt-text-fill: #6f706f" />
             <TextField fx:id="maximumServiceTimeTextField" layoutX="231.0" layoutY="360.0" promptText="e.g. 4" style="-fx-prompt-text-fill: #6f706f" />
             <Button fx:id="startSimulationButton" layoutX="21.0" layoutY="500.0" mnemonicParsing="false" onMouseClicked="#onStartSimulationButtonClicked" prefHeight="41.0" prefWidth="374.0" text="Start simulation" />
-            <Label fx:id="currentSimulationTimeLabel" layoutX="750.0" layoutY="550.0" prefHeight="70.0" prefWidth="423.0" text="Simulation status: inactive" textAlignment="CENTER" textFill="WHITE">
+            <Label fx:id="currentSimulationTimeLabel" layoutX="750.0" layoutY="550.0" prefHeight="70.0" prefWidth="423.0" text="Simulation time: 0" textAlignment="CENTER" textFill="WHITE">
                <font>
                   <Font size="18.0" />
                </font>
