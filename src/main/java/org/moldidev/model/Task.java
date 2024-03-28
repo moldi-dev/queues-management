@@ -5,12 +5,6 @@ public class Task implements Comparable<Task> {
     private int arrivalTime;
     private int serviceTime;
 
-    public Task() {
-        this.id = 0;
-        this.arrivalTime = 0;
-        this.serviceTime = 0;
-    }
-
     public Task(int id, int arrivalTime, int serviceTime) {
         this.id = id;
         this.arrivalTime = arrivalTime;
@@ -27,14 +21,6 @@ public class Task implements Comparable<Task> {
 
     public int getServiceTime() {
         return this.serviceTime;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setArrivalTime(int arrivalTime) {
-        this.arrivalTime = arrivalTime;
     }
 
     public void setServiceTime(int serviceTime) {

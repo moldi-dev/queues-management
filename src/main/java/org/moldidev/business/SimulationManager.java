@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class SimulationManager implements Runnable {
     private final Controller controller;
@@ -24,11 +23,14 @@ public class SimulationManager implements Runnable {
     public int minArrivalTime;
     public SelectionPolicy selectionPolicy;
     public TextArea simulationLogs;
-    public Label currentSimulationTime;
     public Label validInputLabel;
+    public Label simulationStatusLabel;
     private Scheduler scheduler;
     private List<Task> generatedTasks;
     private double averageServiceTime = 0.0f;
+    private double averageWaitingTime = 0.0f;
+    private int peakHour = 0;
+    private int peakHourTotalTasks = 0;
 
     public SimulationManager(Controller controller) {
         this.generatedTasks = new ArrayList<>();
@@ -51,8 +53,8 @@ public class SimulationManager implements Runnable {
         this.maxArrivalTime = Integer.parseInt(this.controller.getMaximumArrivalTimeTextField().getText().replaceAll(" ", ""));
         this.minArrivalTime = Integer.parseInt(this.controller.getMinimumArrivalTimeTextField().getText().replaceAll(" ", ""));
         this.simulationLogs = this.controller.getSimulationLogsTextArea();
-        this.currentSimulationTime = this.controller.getCurrentSimulationTimeLabel();
         this.validInputLabel = this.controller.getValidInputLabel();
+        this.simulationStatusLabel = this.controller.getSimulationStatusLabel();
 
         this.scheduler = new Scheduler(this.numberOfServers, this.numberOfClients / this.numberOfServers + 1);
 
@@ -79,6 +81,8 @@ public class SimulationManager implements Runnable {
 
         this.controller.disableInputs();
 
+        Platform.runLater(() -> this.validInputLabel.setText("The simulation has been successfully set up! Performing the simulation..."));
+
         do {
             dispatchTasks(currentTime);
 
@@ -90,6 +94,7 @@ public class SimulationManager implements Runnable {
 
             catch (InterruptedException e) {
                 e.printStackTrace();
+                Thread.currentThread().interrupt();
             }
 
             updateServerStates();
@@ -97,21 +102,30 @@ public class SimulationManager implements Runnable {
             currentTime++;
         } while (!((generatedTasks.isEmpty() && areAllServersIdle()) || (currentTime > this.timeLimit)));
 
+        this.averageServiceTime /= this.numberOfClients;
+        this.averageWaitingTime /= this.numberOfClients;
 
-        double averageWaitingTime = 0.0f;
+        simulationLogs.append("Time: ").append(currentTime).append("\n");
+        simulationLogs.append("Waiting clients: none").append("\n");
 
-        for (Server server : this.scheduler.getServers()) {
-            averageWaitingTime += server.getWaitingPeriod().doubleValue();
+        for (int i = 0; i < this.numberOfServers; i++) {
+            simulationLogs.append("Queue ").append(i + 1).append(": closed").append("\n");
         }
 
-        this.averageServiceTime /= this.numberOfClients;
-        averageWaitingTime /= this.numberOfClients;
+        simulationLogs.append("\n");
 
-        simulationLogs.append("Average waiting time: ").append(averageWaitingTime).append("\n");
-        simulationLogs.append("Average service time: ").append(averageServiceTime).append("\n");
+        simulationLogs.append("Average waiting time: ").append(this.averageWaitingTime).append("\n");
+        simulationLogs.append("Peak hour: ").append(this.peakHour).append("\n");
+        simulationLogs.append("Average service time: ").append(this.averageServiceTime).append("\n");
         this.simulationLogs.setText(simulationLogs.toString());
+        this.simulationLogs.positionCaret(this.simulationLogs.getText().length());
 
         this.controller.enableInputs();
+
+        Platform.runLater(() -> {
+            this.validInputLabel.setText("");
+            this.simulationStatusLabel.setText("Simulation status: inactive");
+        });
     }
 
     private boolean areAllServersIdle() {
@@ -126,19 +140,35 @@ public class SimulationManager implements Runnable {
 
     private void dispatchTasks(int currentTime) {
         Iterator<Task> iterator = this.generatedTasks.iterator();
+        int totalTasks = 0;
 
         while (iterator.hasNext()) {
             Task task = iterator.next();
+
             if (task.getArrivalTime() <= currentTime && !isTaskDispatched(task)) {
                 this.scheduler.dispatchTask(task);
                 this.averageServiceTime += task.getServiceTime();
+                this.averageWaitingTime += task.getServiceTime();
                 iterator.remove();
             }
         }
+
+        for (Server server : this.scheduler.getServers()) {
+            totalTasks += server.getTasks().length;
+        }
+
+        if (totalTasks > this.peakHourTotalTasks) {
+            this.peakHour = currentTime;
+            this.peakHourTotalTasks = totalTasks;
+        }
+
+//        for (Server server : this.scheduler.getServers()) {
+//            this.averageWaitingTime += server.getWaitingPeriod().doubleValue();
+//        }
     }
 
     private boolean isTaskDispatched(Task task) {
-        for (Server server : scheduler.getServers()) {
+        for (Server server : this.scheduler.getServers()) {
             for (Task currentTask : server.getTasks()) {
                 if (currentTask.getId() == task.getId()) {
                     return true;
@@ -151,27 +181,35 @@ public class SimulationManager implements Runnable {
 
     private void updateSimulationLogsAndTime(int currentTime, StringBuilder simulationLogs) {
         Platform.runLater(() -> {
+            boolean areClientsWaiting = false;
+            this.simulationStatusLabel.setText("Simulation status: active\nCurrent simulation time: " + currentTime);
+
             simulationLogs.append("Time ").append(currentTime).append("\n");
             simulationLogs.append("Waiting clients: ");
 
-            // Append waiting clients information
             for (Task task : this.generatedTasks) {
                 if (task.getArrivalTime() > currentTime) {
                     simulationLogs.append("(").append(task.getId()).append(",").append(task.getArrivalTime()).append(",").append(task.getServiceTime()).append("); ");
+                    areClientsWaiting = true;
                 }
+            }
+
+            if (!areClientsWaiting) {
+                simulationLogs.append("none");
             }
 
             simulationLogs.append("\n");
 
-            // Append server queues information
             for (int i = 0; i < this.numberOfServers; i++) {
                 Server server = this.scheduler.getServers().get(i);
 
-                simulationLogs.append("Queue ").append(i + 1).append(": ");
+                simulationLogs.append("Queue ").append(i + 1).append(" (size = ").append(server.getTasks().length).append("): ");
 
                 if (server.getTasks().length == 0) {
                     simulationLogs.append("closed\n");
-                } else {
+                }
+
+                else {
                     for (Task task : server.getTasks()) {
                         simulationLogs.append("(").append(task.getId()).append(",").append(task.getArrivalTime()).append(",").append(task.getServiceTime()).append("); ");
                     }
@@ -181,8 +219,8 @@ public class SimulationManager implements Runnable {
 
             simulationLogs.append("\n");
 
-            this.currentSimulationTime.setText("Simulation time: " + currentTime);
             this.simulationLogs.setText(simulationLogs.toString());
+            this.simulationLogs.positionCaret(this.simulationLogs.getText().length());
         });
     }
 
@@ -191,6 +229,7 @@ public class SimulationManager implements Runnable {
             if (server.getTasks().length > 0) {
                 Task firstTask = server.getTasks()[0];
                 firstTask.setServiceTime(firstTask.getServiceTime() - 1);
+
                 if (firstTask.getServiceTime() == 0) {
                     server.removeTask(firstTask);
                 }

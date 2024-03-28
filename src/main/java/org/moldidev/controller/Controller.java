@@ -10,6 +10,8 @@ import org.moldidev.business.SimulationManager;
 public class Controller {
 
     @FXML
+    private Label simulationStatusLabel;
+    @FXML
     private Label validInputLabel;
     @FXML
     private Label inputValidationErrorLabel;
@@ -48,8 +50,6 @@ public class Controller {
     @FXML
     private Button startSimulationButton;
     @FXML
-    private Label currentSimulationTimeLabel;
-    @FXML
     private Label selectionPolicyLabel;
     @FXML
     private ChoiceBox<String> selectionPolicyChoiceBox;
@@ -61,6 +61,10 @@ public class Controller {
         this.selectionPolicyChoiceBox.getItems().add("SHORTEST QUEUE");
 
         this.selectionPolicyChoiceBox.getSelectionModel().select(0);
+    }
+
+    public Label getSimulationStatusLabel() {
+        return this.simulationStatusLabel;
     }
 
     public TextField getNumberOfClientsTextField() {
@@ -93,10 +97,6 @@ public class Controller {
 
     public TextField getMaximumServiceTimeTextField() {
         return this.maximumServiceTimeTextField;
-    }
-
-    public Label getCurrentSimulationTimeLabel() {
-        return this.currentSimulationTimeLabel;
     }
 
     public Label getValidInputLabel() {
@@ -164,7 +164,6 @@ public class Controller {
         this.maximumArrivalTimeTextField.setDisable(false);
         this.selectionPolicyChoiceBox.setDisable(false);
         setInputValidationErrorLabelMessage("");
-        this.validInputLabel.setText("");
     }
 
     private boolean checkInputs() {

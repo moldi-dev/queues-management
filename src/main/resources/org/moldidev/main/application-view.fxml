@@ -62,11 +62,6 @@
             <TextField fx:id="minimumServiceTimeTextField" layoutX="43.0" layoutY="360.0" promptText="e.g. 2" style="-fx-prompt-text-fill: #6f706f" />
             <TextField fx:id="maximumServiceTimeTextField" layoutX="231.0" layoutY="360.0" promptText="e.g. 4" style="-fx-prompt-text-fill: #6f706f" />
             <Button fx:id="startSimulationButton" layoutX="21.0" layoutY="500.0" mnemonicParsing="false" onMouseClicked="#onStartSimulationButtonClicked" prefHeight="41.0" prefWidth="374.0" text="Start simulation" />
-            <Label fx:id="currentSimulationTimeLabel" layoutX="750.0" layoutY="550.0" prefHeight="70.0" prefWidth="423.0" text="Simulation time: 0" textAlignment="CENTER" textFill="WHITE">
-               <font>
-                  <Font size="18.0" />
-               </font>
-            </Label>
             <Label fx:id="inputValidationErrorLabel" layoutX="22.0" layoutY="653.0" prefHeight="38.0" prefWidth="850.0" textAlignment="CENTER" textFill="RED">
                <font>
                   <Font size="14.0" />
@@ -79,6 +74,11 @@
             </Label>
             <ChoiceBox fx:id="selectionPolicyChoiceBox" layoutX="149.0" layoutY="432.0" prefWidth="150.0" />
             <Label fx:id="selectionPolicyLabel" layoutX="173.0" layoutY="407.0" text="Selection Policy" textFill="WHITE" />
+            <Label fx:id="simulationStatusLabel" layoutX="720.0" layoutY="538.0" prefHeight="85.0" prefWidth="305.0" text="Simulation status: inactive" textAlignment="CENTER" textFill="WHITE">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Label>
          </children>
       </Pane>
    </children>
