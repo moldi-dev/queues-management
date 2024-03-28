@@ -24,6 +24,7 @@ public class SimulationManager implements Runnable {
     private SelectionPolicy selectionPolicy;
     private TextArea simulationLogs;
     private Label validInputLabel;
+    private Label invalidInputLabel;
     private Label simulationStatusLabel;
     private Scheduler scheduler;
     private List<Task> generatedTasks;
@@ -60,6 +61,7 @@ public class SimulationManager implements Runnable {
         this.simulationLogs = this.controller.getSimulationLogsTextArea();
         this.validInputLabel = this.controller.getValidInputLabel();
         this.simulationStatusLabel = this.controller.getSimulationStatusLabel();
+        this.invalidInputLabel = this.controller.getInvalidInputLabel();
 
         this.scheduler = new Scheduler(this.numberOfServers, this.numberOfClients / this.numberOfServers + 1, this.controller);
 
@@ -105,7 +107,10 @@ public class SimulationManager implements Runnable {
 
         this.controller.disableInputs();
 
-        Platform.runLater(() -> this.validInputLabel.setText("The simulation has been successfully set up! Performing the simulation..."));
+        Platform.runLater(() -> {
+            this.invalidInputLabel.setText("");
+            this.validInputLabel.setText("The simulation has been successfully set up! Performing the simulation...");
+        });
 
         // While the simulation is running, dispatch the required tasks, update the simulation logs,
         // wait one second and update the servers' states and increment the "currentTime" variable

@@ -108,6 +108,10 @@ public class Controller {
         return this.validInputLabel;
     }
 
+    public Label getInvalidInputLabel() {
+        return this.inputValidationErrorLabel;
+    }
+
     public int getSelectionPolicy() {
         if (this.selectionPolicyChoiceBox.getSelectionModel().isSelected(0)) {
             return 0;
@@ -170,7 +174,6 @@ public class Controller {
         this.minimumArrivalTimeTextField.setDisable(true);
         this.maximumArrivalTimeTextField.setDisable(true);
         this.selectionPolicyChoiceBox.setDisable(true);
-        setInputValidationErrorLabelMessage("");
         this.simulationLogsTextArea.setText("");
     }
 
@@ -189,7 +192,6 @@ public class Controller {
         this.minimumArrivalTimeTextField.setDisable(false);
         this.maximumArrivalTimeTextField.setDisable(false);
         this.selectionPolicyChoiceBox.setDisable(false);
-        setInputValidationErrorLabelMessage("");
     }
 
     /*
