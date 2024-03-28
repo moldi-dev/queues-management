@@ -7,6 +7,12 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class Application extends javafx.application.Application {
+    /*
+    * @param stage
+    * @return void
+    *
+    * The start method sets up the application's main view (scene).
+    */
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("application-view.fxml"));
@@ -18,6 +24,12 @@ public class Application extends javafx.application.Application {
         stage.show();
     }
 
+    /*
+    * @param args
+    * @return void
+    *
+    * The application's main method calls the launch() method in order to open up the main view.
+    */
     public static void main(String[] args) {
         launch();
     }

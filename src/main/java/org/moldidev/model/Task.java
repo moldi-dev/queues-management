@@ -5,6 +5,13 @@ public class Task implements Comparable<Task> {
     private int arrivalTime;
     private int serviceTime;
 
+    /*
+    * @param id
+    * @param arrivalTime
+    * @param serviceTime
+    *
+    * The class' constructor initializes a new task with the given parameters.
+    */
     public Task(int id, int arrivalTime, int serviceTime) {
         this.id = id;
         this.arrivalTime = arrivalTime;
@@ -27,6 +34,12 @@ public class Task implements Comparable<Task> {
         this.serviceTime = serviceTime;
     }
 
+    /*
+    * @param other
+    * @return int
+    *
+    * Compares two "Task" objects based on their arrival time.
+    */
     @Override
     public int compareTo(Task other) {
         return Integer.compare(this.arrivalTime, other.arrivalTime);

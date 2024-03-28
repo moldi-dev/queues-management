@@ -14,17 +14,17 @@ import java.util.List;
 
 public class SimulationManager implements Runnable {
     private final Controller controller;
-    public int timeLimit;
-    public int maxProcessingTime;
-    public int minProcessingTime;
-    public int numberOfServers;
-    public int numberOfClients;
-    public int maxArrivalTime;
-    public int minArrivalTime;
-    public SelectionPolicy selectionPolicy;
-    public TextArea simulationLogs;
-    public Label validInputLabel;
-    public Label simulationStatusLabel;
+    private int timeLimit;
+    private int maxProcessingTime;
+    private int minProcessingTime;
+    private int numberOfServers;
+    private int numberOfClients;
+    private int maxArrivalTime;
+    private int minArrivalTime;
+    private SelectionPolicy selectionPolicy;
+    private TextArea simulationLogs;
+    private Label validInputLabel;
+    private Label simulationStatusLabel;
     private Scheduler scheduler;
     private List<Task> generatedTasks;
     private double averageServiceTime = 0.0f;
@@ -32,6 +32,11 @@ public class SimulationManager implements Runnable {
     private int peakHour = 0;
     private int peakHourTotalTasks = 0;
 
+    /*
+    * @param controller
+    *
+    * The class' constructor initializes the selection policy, UI fields and calls the "generateNRandomTasks()" method.
+    */
     public SimulationManager(Controller controller) {
         this.generatedTasks = new ArrayList<>();
 
@@ -56,11 +61,16 @@ public class SimulationManager implements Runnable {
         this.validInputLabel = this.controller.getValidInputLabel();
         this.simulationStatusLabel = this.controller.getSimulationStatusLabel();
 
-        this.scheduler = new Scheduler(this.numberOfServers, this.numberOfClients / this.numberOfServers + 1);
+        this.scheduler = new Scheduler(this.numberOfServers, this.numberOfClients / this.numberOfServers + 1, this.controller);
 
         generateNRandomTasks();
     }
 
+    /*
+     * @return void
+     *
+     * Generates N = numberOfClients random tasks, with the arrival time intervals and processing time intervals specified by the user.
+     */
     private void generateNRandomTasks() {
         for (int i = 1; i <= this.numberOfClients; i++) {
             Task task = new Task(i, getRandomNumber(this.minArrivalTime, this.maxArrivalTime), getRandomNumber(this.minProcessingTime, this.maxProcessingTime));
@@ -70,12 +80,26 @@ public class SimulationManager implements Runnable {
         Collections.sort(this.generatedTasks);
     }
 
+    /*
+    * @param min
+    * @param max
+    * @return int
+    *
+    * Returns a random integer in the [min, max] interval
+    */
     private int getRandomNumber(int min, int max) {
         return (int) ((Math.random() * (max - min)) + min);
     }
 
+    /*
+    * @return void
+    *
+    * Runs the thread
+    */
     @Override
     public void run() {
+        // Initialize the current time, simulation logs string, disable the inputs in the UI and set the simulation starting message
+
         int currentTime = 0;
         StringBuilder simulationLogs = new StringBuilder();
 
@@ -83,6 +107,8 @@ public class SimulationManager implements Runnable {
 
         Platform.runLater(() -> this.validInputLabel.setText("The simulation has been successfully set up! Performing the simulation..."));
 
+        // While the simulation is running, dispatch the required tasks, update the simulation logs,
+        // wait one second and update the servers' states and increment the "currentTime" variable
         do {
             dispatchTasks(currentTime);
 
@@ -100,7 +126,10 @@ public class SimulationManager implements Runnable {
             updateServerStates();
 
             currentTime++;
-        } while (!((generatedTasks.isEmpty() && areAllServersIdle()) || (currentTime > this.timeLimit)));
+        } while (!((this.generatedTasks.isEmpty() && areAllServersIdle()) || (currentTime > this.timeLimit)));
+
+        // The simulation is done, so finish computing the average service and waiting times and append to the simulation logs
+        // all the necessary output
 
         this.averageServiceTime /= this.numberOfClients;
         this.averageWaitingTime /= this.numberOfClients;
@@ -128,6 +157,11 @@ public class SimulationManager implements Runnable {
         });
     }
 
+    /*
+     * @return boolean
+     *
+     * Checks if all the servers are in idle state (i.e. they have no tasks).
+     */
     private boolean areAllServersIdle() {
         for (Server server : this.scheduler.getServers()) {
             if (server.getTasks().length > 0) {
@@ -138,6 +172,13 @@ public class SimulationManager implements Runnable {
         return true;
     }
 
+    /*
+    * @param currentTime
+    * @return void
+    *
+    * Dispatches the tasks which have their arrival time less than or equal to the current thread time.
+    * Updates the peak hour (or peak time) and computes the sum of the dispatched tasks' service and waiting times.
+    */
     private void dispatchTasks(int currentTime) {
         Iterator<Task> iterator = this.generatedTasks.iterator();
         int totalTasks = 0;
@@ -167,6 +208,12 @@ public class SimulationManager implements Runnable {
 //        }
     }
 
+    /*
+    * @param task
+    * @return boolean
+    *
+    * Checks if the given task has been already dispatched.
+    */
     private boolean isTaskDispatched(Task task) {
         for (Server server : this.scheduler.getServers()) {
             for (Task currentTask : server.getTasks()) {
@@ -179,6 +226,13 @@ public class SimulationManager implements Runnable {
         return false;
     }
 
+    /*
+    * @param currentTime
+    * @param simulationLogs
+    * @return void
+    *
+    * Updates the simulation logs (i.e. shows on the UI log of events which clients are waiting, the current simulation time and the queues).
+    */
     private void updateSimulationLogsAndTime(int currentTime, StringBuilder simulationLogs) {
         Platform.runLater(() -> {
             boolean areClientsWaiting = false;
@@ -224,6 +278,12 @@ public class SimulationManager implements Runnable {
         });
     }
 
+    /*
+    * @return void
+    *
+    * Updates the current states of the servers (i.e. decreases at each moment the service time of each task by 1
+    * and removes the tasks with a service time equal to 0).
+    */
     private void updateServerStates() {
         for (Server server : this.scheduler.getServers()) {
             if (server.getTasks().length > 0) {

@@ -55,6 +55,11 @@ public class Controller {
     private ChoiceBox<String> selectionPolicyChoiceBox;
     private Timeline inputErrorTimeline = new Timeline();
 
+    /*
+    * @return void
+    *
+    * Initializes the controller and sets the values of the selection policy choice box.
+    */
     @FXML
     public void initialize() {
         this.selectionPolicyChoiceBox.getItems().add("SHORTEST TIME");
@@ -104,7 +109,7 @@ public class Controller {
     }
 
     public int getSelectionPolicy() {
-        if (selectionPolicyChoiceBox.getSelectionModel().isSelected(0)) {
+        if (this.selectionPolicyChoiceBox.getSelectionModel().isSelected(0)) {
             return 0;
         }
 
@@ -113,6 +118,11 @@ public class Controller {
         }
     }
 
+    /*
+    * @return void
+    *
+    * Checks the given inputs, and if they're correct, starts the simulation.
+    */
     @FXML
     private void onStartSimulationButtonClicked() {
         if (checkInputs()) {
@@ -122,6 +132,12 @@ public class Controller {
         }
     }
 
+    /*
+    * @param message
+    * @return void
+    *
+    * Sets a the value of the invalid input error label and then hides it after 4 seconds.
+    */
     private void setInputValidationErrorLabelMessage(String message) {
         this.inputValidationErrorLabel.setText(message);
 
@@ -139,6 +155,11 @@ public class Controller {
         this.inputErrorTimeline.play();
     }
 
+    /*
+    * @return void
+    *
+    * Disables the user's ability to change/add inputs (used when a simulation is active).
+    */
     public synchronized void disableInputs() {
         this.startSimulationButton.setDisable(true);
         this.maximumServiceTimeTextField.setDisable(true);
@@ -153,6 +174,11 @@ public class Controller {
         this.simulationLogsTextArea.setText("");
     }
 
+    /*
+     * @return void
+     *
+     * Lets the user change/add inputs as his wishes (used when a simulation has finished).
+     */
     public synchronized void enableInputs() {
         this.startSimulationButton.setDisable(false);
         this.maximumServiceTimeTextField.setDisable(false);
@@ -166,6 +192,11 @@ public class Controller {
         setInputValidationErrorLabelMessage("");
     }
 
+    /*
+     * @return boolean
+     *
+     * Checks the user's inputs and if they're wrong displays a custom error message.
+     */
     private boolean checkInputs() {
         String numberRegex = "^[1-9]+[0-9]*$"; // regex which checks for an integer greater than 0
         int userInput1;
@@ -217,7 +248,7 @@ public class Controller {
         }
 
         // Validate the maximum arrival time text field (should be an integer greater than 0)
-        if (this.maximumArrivalTimeTextField.getText().isEmpty() || maximumArrivalTimeTextField.getText().isBlank()) {
+        if (this.maximumArrivalTimeTextField.getText().isEmpty() || this.maximumArrivalTimeTextField.getText().isBlank()) {
             setInputValidationErrorLabelMessage("The maximum arrival time input field can't be empty, nor blank!");
             return false;
         }
@@ -235,7 +266,7 @@ public class Controller {
             return false;
         }
 
-        // Validate the maximum arrival time + maximum service time and simulation time
+        // Validate the relationship between the maximum arrival time, maximum service time and the simulation time
         userInput1 = Integer.parseInt(this.maximumArrivalTimeTextField.getText().replaceAll(" ", ""));
         userInput2 = Integer.parseInt(this.simulationIntervalTextField.getText().replaceAll(" ", ""));
         userInput3 = Integer.parseInt(this.maximumServiceTimeTextField.getText().replaceAll(" ", ""));
@@ -267,6 +298,7 @@ public class Controller {
             return false;
         }
 
+        // Validate the relationship between the minimum service time and maximum service time
         userInput1 = Integer.parseInt(this.minimumServiceTimeTextField.getText().replaceAll(" ", ""));
         userInput2 = Integer.parseInt(this.maximumServiceTimeTextField.getText().replaceAll(" ", ""));
 
