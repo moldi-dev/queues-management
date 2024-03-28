@@ -32,7 +32,7 @@ public class Server implements Runnable {
     *
     * Adds a new task to the server and increments its current waiting period.
     */
-    public void addTask(Task newTask) {
+    public synchronized void addTask(Task newTask) {
         this.tasks.add(newTask);
         this.waitingPeriod.incrementAndGet();
     }
@@ -43,7 +43,7 @@ public class Server implements Runnable {
     *
     * Removes a task from the server based on its identifier.
     */
-    public void removeTask(Task taskToRemove) {
+    public synchronized void removeTask(Task taskToRemove) {
         this.tasks.removeIf(task -> task.getId() == taskToRemove.getId());
     }
 
@@ -52,7 +52,7 @@ public class Server implements Runnable {
     *
     * Computes the server's total service time.
     */
-    public int getTotalServiceTime() {
+    public synchronized int getTotalServiceTime() {
         int totalServiceTime = 0;
 
         for (Task task : this.tasks) {

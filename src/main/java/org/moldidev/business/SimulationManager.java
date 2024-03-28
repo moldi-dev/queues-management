@@ -138,7 +138,7 @@ public class SimulationManager implements Runnable {
         simulationLogs.append("Waiting clients: none").append("\n");
 
         for (int i = 0; i < this.numberOfServers; i++) {
-            simulationLogs.append("Queue ").append(i + 1).append(": closed").append("\n");
+            simulationLogs.append("Queue ").append(i + 1).append(" (size = 0): closed").append("\n");
         }
 
         simulationLogs.append("\n");
