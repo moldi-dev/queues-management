@@ -21,7 +21,6 @@ public class SimulationManager implements Runnable {
     private int numberOfClients;
     private int maxArrivalTime;
     private int minArrivalTime;
-    private SelectionPolicy selectionPolicy;
     private TextArea simulationLogs;
     private Label validInputLabel;
     private Label invalidInputLabel;
@@ -36,20 +35,12 @@ public class SimulationManager implements Runnable {
     /*
     * @param controller
     *
-    * The class' constructor initializes the selection policy, UI fields and calls the "generateNRandomTasks()" method.
+    * The class' constructor initializes the UI fields and calls the "generateNRandomTasks()" method.
     */
     public SimulationManager(Controller controller) {
         this.generatedTasks = new ArrayList<>();
 
         this.controller = controller;
-
-        if (this.controller.getSelectionPolicy() == 0) {
-            this.selectionPolicy = SelectionPolicy.SHORTEST_TIME;
-        }
-
-        else {
-            this.selectionPolicy = SelectionPolicy.SHORTEST_QUEUE;
-        }
 
         this.timeLimit = Integer.parseInt(this.controller.getSimulationIntervalTextField().getText().replaceAll(" ", ""));
         this.maxProcessingTime = Integer.parseInt(this.controller.getMaximumServiceTimeTextField().getText().replaceAll(" ", ""));
@@ -136,17 +127,18 @@ public class SimulationManager implements Runnable {
         // The simulation is done, so finish computing the average service and waiting times and append to the simulation logs
         // all the necessary output
 
-        this.averageServiceTime /= this.numberOfClients;
-        this.averageWaitingTime /= this.numberOfClients;
+        if (this.generatedTasks.isEmpty() && areAllServersIdle()) {
+            simulationLogs.append("Time ").append(currentTime).append("\n");
 
-        simulationLogs.append("Time: ").append(currentTime).append("\n");
-        simulationLogs.append("Waiting clients: none").append("\n");
+            for (int i = 0; i < this.numberOfServers; i++) {
+                simulationLogs.append("Queue ").append(i + 1).append(" (size = 0): closed").append("\n");
+            }
 
-        for (int i = 0; i < this.numberOfServers; i++) {
-            simulationLogs.append("Queue ").append(i + 1).append(" (size = 0): closed").append("\n");
+            simulationLogs.append("\n");
         }
 
-        simulationLogs.append("\n");
+        this.averageServiceTime /= this.numberOfClients;
+        this.averageWaitingTime /= this.numberOfClients;
 
         simulationLogs.append("Average waiting time: ").append(this.averageWaitingTime).append("\n");
         simulationLogs.append("Peak hour: ").append(this.peakHour).append("\n");
@@ -201,16 +193,13 @@ public class SimulationManager implements Runnable {
 
         for (Server server : this.scheduler.getServers()) {
             totalTasks += server.getTasks().length;
+            //this.averageWaitingTime += server.getWaitingPeriod().doubleValue();
         }
 
         if (totalTasks > this.peakHourTotalTasks) {
             this.peakHour = currentTime;
             this.peakHourTotalTasks = totalTasks;
         }
-
-//        for (Server server : this.scheduler.getServers()) {
-//            this.averageWaitingTime += server.getWaitingPeriod().doubleValue();
-//        }
     }
 
     /*
@@ -248,7 +237,7 @@ public class SimulationManager implements Runnable {
 
             for (Task task : this.generatedTasks) {
                 if (task.getArrivalTime() > currentTime) {
-                    simulationLogs.append("(").append(task.getId()).append(",").append(task.getArrivalTime()).append(",").append(task.getServiceTime()).append("); ");
+                    simulationLogs.append("(").append(task.getId()).append(", ").append(task.getArrivalTime()).append(", ").append(task.getServiceTime()).append("); ");
                     areClientsWaiting = true;
                 }
             }

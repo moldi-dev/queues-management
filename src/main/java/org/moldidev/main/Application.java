@@ -17,7 +17,7 @@ public class Application extends javafx.application.Application {
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Application.class.getResource("application-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1280, 720);
-        stage.setTitle("Queues management application made by Moldovan Darius-Andrei, 30421");
+        stage.setTitle("Queues management application");
         stage.setResizable(false);
         stage.setScene(scene);
         stage.setOnCloseRequest(event -> System.exit(0));

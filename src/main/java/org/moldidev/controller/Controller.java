@@ -203,7 +203,6 @@ public class Controller {
         String numberRegex = "^[1-9]+[0-9]*$"; // regex which checks for an integer greater than 0
         int userInput1;
         int userInput2;
-        int userInput3;
 
         // Validate the number of clients text field (should be an integer greater than 0)
         if (this.numberOfClientsTextField.getText().isEmpty() || this.numberOfClientsTextField.getText().isBlank()) {
@@ -265,16 +264,6 @@ public class Controller {
 
         if (userInput1 > userInput2) {
             setInputValidationErrorLabelMessage("The minimum arrival time must be less than or equal to the maximum arrival time!");
-            return false;
-        }
-
-        // Validate the relationship between the maximum arrival time, maximum service time and the simulation time
-        userInput1 = Integer.parseInt(this.maximumArrivalTimeTextField.getText().replaceAll(" ", ""));
-        userInput2 = Integer.parseInt(this.simulationIntervalTextField.getText().replaceAll(" ", ""));
-        userInput3 = Integer.parseInt(this.maximumServiceTimeTextField.getText().replaceAll(" ", ""));
-
-        if (userInput1 + userInput3 > userInput2) {
-            setInputValidationErrorLabelMessage("The simulation interval must be greater or equal to the sum of maximum arrival time and maximum service time!");
             return false;
         }
 

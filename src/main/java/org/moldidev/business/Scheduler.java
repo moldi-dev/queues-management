@@ -11,7 +11,6 @@ public class Scheduler implements Strategy {
     private List<Server> servers;
     private Strategy strategy;
     private Controller controller;
-    private SelectionPolicy selectionPolicy;
 
     /*
     * @param maxNoServers
@@ -25,14 +24,6 @@ public class Scheduler implements Strategy {
         this.controller = controller;
 
         if (this.controller.getSelectionPolicy() == 0) {
-            this.selectionPolicy = SelectionPolicy.SHORTEST_TIME;
-        }
-
-        else {
-            this.selectionPolicy = SelectionPolicy.SHORTEST_QUEUE;
-        }
-
-        if (this.selectionPolicy == SelectionPolicy.SHORTEST_TIME) {
             this.strategy = new TimeStrategy();
         }
 
