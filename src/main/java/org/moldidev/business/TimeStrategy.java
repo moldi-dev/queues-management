@@ -18,7 +18,7 @@ public class TimeStrategy implements Strategy {
         Server shortestServer = servers.getFirst();
 
         for (Server server : servers) {
-            if (server.getTotalServiceTime() < shortestServer.getTotalServiceTime()) {
+            if (server.getWaitingPeriod().get() < shortestServer.getWaitingPeriod().get()) {
                 shortestServer = server;
             }
         }

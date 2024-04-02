@@ -34,7 +34,7 @@ public class Server implements Runnable {
     */
     public synchronized void addTask(Task newTask) {
         this.tasks.add(newTask);
-        this.waitingPeriod.incrementAndGet();
+        this.waitingPeriod.addAndGet(newTask.getServiceTime());
     }
 
     /*
@@ -45,21 +45,6 @@ public class Server implements Runnable {
     */
     public synchronized void removeTask(Task taskToRemove) {
         this.tasks.removeIf(task -> task.getId() == taskToRemove.getId());
-    }
-
-    /*
-    * @return int
-    *
-    * Computes the server's total service time.
-    */
-    public synchronized int getTotalServiceTime() {
-        int totalServiceTime = 0;
-
-        for (Task task : this.tasks) {
-            totalServiceTime += task.getServiceTime();
-        }
-
-        return totalServiceTime;
     }
 
     /*

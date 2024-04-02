@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 
 public class SimulationManager implements Runnable {
     private final Controller controller;
@@ -29,6 +32,7 @@ public class SimulationManager implements Runnable {
     private List<Task> generatedTasks;
     private double averageServiceTime = 0.0f;
     private double averageWaitingTime = 0.0f;
+    private double averageArrivalTime = 0.0f;
     private int peakHour = 0;
     private int peakHourTotalTasks = 0;
 
@@ -139,10 +143,15 @@ public class SimulationManager implements Runnable {
 
         this.averageServiceTime /= this.numberOfClients;
         this.averageWaitingTime /= this.numberOfClients;
+        this.averageArrivalTime /= this.numberOfClients;
 
-        simulationLogs.append("Average waiting time: ").append(this.averageWaitingTime).append("\n");
         simulationLogs.append("Peak hour: ").append(this.peakHour).append("\n");
+        simulationLogs.append("Average arrival time: ").append(this.averageArrivalTime).append("\n");
         simulationLogs.append("Average service time: ").append(this.averageServiceTime).append("\n");
+        simulationLogs.append("Average waiting time: ").append(this.averageWaitingTime).append("\n");
+
+        saveSimulationLogsToFile(simulationLogs.toString(), "simulationLogs.txt");
+
         this.simulationLogs.setText(simulationLogs.toString());
         this.simulationLogs.positionCaret(this.simulationLogs.getText().length());
 
@@ -152,6 +161,23 @@ public class SimulationManager implements Runnable {
             this.validInputLabel.setText("");
             this.simulationStatusLabel.setText("Simulation status: inactive");
         });
+    }
+
+    private void saveSimulationLogsToFile(String simulationLog, String fileName) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true))) {
+            writer.write(simulationLog);
+            writer.newLine();
+            writer.newLine();
+            writer.newLine();
+            writer.write("-----------------------------------------------------------------------");
+            writer.newLine();
+            writer.newLine();
+            writer.newLine();
+        }
+
+        catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /*
@@ -186,14 +212,26 @@ public class SimulationManager implements Runnable {
             if (task.getArrivalTime() <= currentTime && !isTaskDispatched(task)) {
                 this.scheduler.dispatchTask(task);
                 this.averageServiceTime += task.getServiceTime();
-                this.averageWaitingTime += task.getServiceTime();
+                this.averageArrivalTime += task.getArrivalTime();
+
                 iterator.remove();
             }
         }
 
         for (Server server : this.scheduler.getServers()) {
             totalTasks += server.getTasks().length;
-            //this.averageWaitingTime += server.getWaitingPeriod().doubleValue();
+
+            for (int i = 0; i < server.getTasks().length; i++) {
+                if (i == 0) {
+                    this.averageWaitingTime += server.getTasks()[i].getServiceTime();
+                }
+
+                else {
+                    for (int k = 0; k <= i; k++) {
+                        this.averageWaitingTime += server.getTasks()[k].getServiceTime();
+                    }
+                }
+            }
         }
 
         if (totalTasks > this.peakHourTotalTasks) {
