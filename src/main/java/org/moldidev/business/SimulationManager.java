@@ -214,23 +214,23 @@ public class SimulationManager implements Runnable {
                 this.averageServiceTime += task.getServiceTime();
                 this.averageArrivalTime += task.getArrivalTime();
 
-                iterator.remove();
-            }
-        }
+                for (Server server : this.scheduler.getServers()) {
+                    totalTasks += server.getTasks().length;
 
-        for (Server server : this.scheduler.getServers()) {
-            totalTasks += server.getTasks().length;
+                    for (int i = 0; i < server.getTasks().length; i++) {
+                        if (i == 0) {
+                            this.averageWaitingTime += server.getTasks()[i].getServiceTime();
+                        }
 
-            for (int i = 0; i < server.getTasks().length; i++) {
-                if (i == 0) {
-                    this.averageWaitingTime += server.getTasks()[i].getServiceTime();
-                }
-
-                else {
-                    for (int k = 0; k <= i; k++) {
-                        this.averageWaitingTime += server.getTasks()[k].getServiceTime();
+                        else {
+                            for (int k = 0; k <= i; k++) {
+                                this.averageWaitingTime += server.getTasks()[k].getServiceTime();
+                            }
+                        }
                     }
                 }
+
+                iterator.remove();
             }
         }
 
@@ -297,7 +297,7 @@ public class SimulationManager implements Runnable {
 
                 else {
                     for (Task task : server.getTasks()) {
-                        simulationLogs.append("(").append(task.getId()).append(",").append(task.getArrivalTime()).append(",").append(task.getServiceTime()).append("); ");
+                        simulationLogs.append("(").append(task.getId()).append(", ").append(task.getArrivalTime()).append(", ").append(task.getServiceTime()).append("); ");
                     }
                     simulationLogs.append("\n");
                 }
